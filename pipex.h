@@ -6,7 +6,11 @@
 #include <stdio.h>
 #include <fcntl.h>
 
-void    pipex(int argc, char **argv);
-void	ft_exit(char *str);
+extern char     **environ;
 
+void        pipex(char **argv, char *path);
+void        ft_exit(char *str);
+void        childpipe(int fd[2], int outfile, char *cmd2, char *path);
+void        parentfpipe(int fd[2], int infile, char *cmd1, char *path);
+char	    *get_env(char *key, char **env);
 #endif
