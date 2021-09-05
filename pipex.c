@@ -1,4 +1,6 @@
 #include "pipex.h"
+#include <string.h>
+#include <signal.h>
 
 void	ft_exit(char *str)
 {
@@ -38,6 +40,7 @@ void    ft_execute(char *path, char **cmd)
 		++i;
 	}
 	freematrix(tab);
+	ft_exit("Error: Invalid command");
 }
 
 char	*get_env(char *key, char **env)
@@ -67,14 +70,14 @@ void    childpipe(int fd[2], int outfile, char *cmd2, char *path)
 
     close(fd[1]);
     args = ft_split(cmd2, ' ');
-    dup2(fd[0], 0);
-    dup2(outfile, 1);
-
+	
+	if (dup2(fd[0], 0) == -1)
+		exit(0);
+	if (dup2(outfile, 1) == -1)
+		exit(0);
     if (args[0][0] == '/') {
         if (execve(args[0], args, environ))
-        {
-            ft_exit("Invalid command");
-        }
+            ft_exit("Error: Invalid command");
     }
     else
         ft_execute(path, args);
@@ -96,10 +99,11 @@ void    parentfpipe(int fd[2], int infile, char *cmd1, char *path)
 	if (args[0][0] == '/')
 	{
 		if (execve(args[0], args, environ) == -1)
-			ft_exit("Invalid command address.");
+			ft_exit("Error: Invalid command");
 	}
 	else
         ft_execute(path, args);
+
 	freematrix(args);	
 	close(infile);
 	close(fd[1]);
@@ -119,12 +123,13 @@ void    pipex(char **argv, char *path)
     outfile = open(argv[4], O_WRONLY);
     if (outfile == -1)
         ft_exit("Failed to open outfile");
-    if (pipe(fd) == -1) {
+    if (pipe(fd) == -1)
         ft_exit("Failed to pipe");
-    }
+
+	if(!strcmp(argv[3], "") || !strcmp(argv[2], ""))
+		ft_exit("empty command");
 
     getpid = fork();
-
     if (getpid == -1) 
         ft_exit("Failed to fork");
     else if (getpid == 0)               //child process
