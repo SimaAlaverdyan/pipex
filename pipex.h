@@ -5,6 +5,7 @@
 #include "libft/libft.h"
 #include <stdio.h>
 #include <fcntl.h>
+#include <ctype.h>
 
 extern char     **environ;
 

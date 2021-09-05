@@ -70,7 +70,10 @@ void    childpipe(int fd[2], int outfile, char *cmd2, char *path)
 
     close(fd[1]);
     args = ft_split(cmd2, ' ');
-	
+
+	if(args[0] == NULL)
+		ft_exit("Error: Empty command");
+
 	if (dup2(fd[0], 0) == -1)
 		exit(0);
 	if (dup2(outfile, 1) == -1)
@@ -92,6 +95,10 @@ void    parentfpipe(int fd[2], int infile, char *cmd1, char *path)
 
 	close(fd[0]);
 	args = ft_split(cmd1, ' ');
+
+	if(args[0] == NULL)
+		ft_exit("Error: Empty command");
+
 	if (dup2(infile, 0) == -1)
 		ft_exit("Failed to connect infile with STDIN");
 	if (dup2(fd[1], 1) == -1)
@@ -125,9 +132,6 @@ void    pipex(char **argv, char *path)
         ft_exit("Failed to open outfile");
     if (pipe(fd) == -1)
         ft_exit("Failed to pipe");
-
-	if(!strcmp(argv[3], "") || !strcmp(argv[2], ""))
-		ft_exit("empty command");
 
     getpid = fork();
     if (getpid == -1) 
